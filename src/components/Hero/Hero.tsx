@@ -1,195 +1,242 @@
 import { useEffect, useRef, useState } from 'react';
+import { ArrowDownRight, Download } from 'lucide-react';
 import './Hero.css';
 import { useMagnetic } from '../../hooks/useMagnetic';
+import { useFitText } from '../../hooks/useFitText';
+import { useParallax } from '../../hooks/useParallax';
+import Parallax from '../Parallax/Parallax';
+
+const ROLES = [
+  'Full-Stack Developer',
+  'Shopify Developer',
+  'Data Analyst',
+  'AI Automation Engineer',
+  'UI/UX Designer',
+  'QA Tester',
+];
+
+const MARQUEE = [
+  'FULL-STACK DEVELOPER',
+  'SHOPIFY + LIQUID',
+  'DATA SCIENCE',
+  'AI AUTOMATION',
+  'UI / UX DESIGN',
+];
 
 export default function Hero() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [roleText, setRoleText] = useState('');
+  const [text, setText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
-  const [loopNum, setLoopNum] = useState(0);
-  const [typingSpeed, setTypingSpeed] = useState(150);
+  const [roleIdx, setRoleIdx] = useState(0);
 
   const primaryBtnRef = useMagnetic<HTMLAnchorElement>(0.3);
-  const secondaryBtnRef = useMagnetic<HTMLAnchorElement>(0.3);
+const secondaryBtnRef = useMagnetic<HTMLAnchorElement>(0.3);
 
-  const roles = ["Full-Stack Developer", "Data Analyst", "AI Automation Engineer", "UI/UX Designer", "QA Tester"];
+const nameRef = useFitText<HTMLHeadingElement>({ min: 28, max: 150 });
+const textRef = useParallax<HTMLDivElement>(0.1);
+const visualRef = useParallax<HTMLDivElement>(0.24);
 
-  // Typewriter effect
+// 3D tilt on the profile picture
+const tiltRef = useRef<HTMLDivElement>(null);
+const onTilt = (e: React.MouseEvent<HTMLDivElement>) => {
+  const el = tiltRef.current;
+  if (!el) return;
+  const r = el.getBoundingClientRect();
+  const x = (e.clientX - r.left) / r.width - 0.5;
+  const y = (e.clientY - r.top) / r.height - 0.5;
+  el.style.setProperty('--ry', `${(x * 16).toFixed(1)}deg`);
+  el.style.setProperty('--rx', `${(-y * 16).toFixed(1)}deg`);
+};
+const resetTilt = () => {
+  tiltRef.current?.style.setProperty('--rx', '0deg');
+  tiltRef.current?.style.setProperty('--ry', '0deg');
+};
+  // Typewriter
   useEffect(() => {
-    const ticker = setTimeout(() => {
-      const i = loopNum % roles.length;
-      const fullText = roles[i];
+    const full = ROLES[roleIdx];
+    let delay = isDeleting ? 35 : 85;
+    if (!isDeleting && text === full) delay = 1800;
+    else if (isDeleting && text === '') delay = 400;
 
-      setRoleText(isDeleting
-        ? fullText.substring(0, roleText.length - 1)
-        : fullText.substring(0, roleText.length + 1)
-      );
-
-      setTypingSpeed(isDeleting ? 30 : 100);
-
-      if (!isDeleting && roleText === fullText) {
-        setIsDeleting(true);
-        setTypingSpeed(2000); // Pause at end
-      } else if (isDeleting && roleText === '') {
+    const t = setTimeout(() => {
+      if (!isDeleting && text === full) setIsDeleting(true);
+      else if (isDeleting && text === '') {
         setIsDeleting(false);
-        setLoopNum(loopNum + 1);
-        setTypingSpeed(500); // Pause before next word
+        setRoleIdx((i) => (i + 1) % ROLES.length);
+      } else {
+        setText(full.slice(0, text.length + (isDeleting ? -1 : 1)));
       }
-    }, typingSpeed);
+    }, delay);
+    return () => clearTimeout(t);
+  }, [text, isDeleting, roleIdx]);
 
-    return () => clearTimeout(ticker);
-  }, [roleText, isDeleting, loopNum, roles, typingSpeed]);
-
-  // Particle canvas — particle count now scales with viewport so the
-  // effect stays light on phones and rich on desktop.
+  // Constellation particle canvas (pauses when off-screen)
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    const ctx = canvas?.getContext('2d');
+    if (!canvas || !ctx) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-    class Particle {
-      x: number;
-      y: number;
-      size: number;
-      speedX: number;
-      speedY: number;
-      color: string;
-
-      constructor() {
-        this.x = Math.random() * (canvas?.width || window.innerWidth);
-        this.y = Math.random() * (canvas?.height || window.innerHeight);
-        this.size = Math.random() * 2 + 0.1;
-        this.speedX = Math.random() * 1 - 0.5;
-        this.speedY = Math.random() * 1 - 0.5;
-        const colors = ['#00ffe7', '#ff00aa', '#ffe600'];
-        this.color = colors[Math.floor(Math.random() * colors.length)];
-      }
-
-      update() {
-        this.x += this.speedX;
-        this.y += this.speedY;
-
-        if (canvas) {
-          if (this.x > canvas.width || this.x < 0) this.speedX = -this.speedX;
-          if (this.y > canvas.height || this.y < 0) this.speedY = -this.speedY;
-        }
-      }
-
-      draw() {
-        if (!ctx) return;
-        ctx.fillStyle = this.color;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.shadowBlur = 10;
-        ctx.shadowColor = this.color;
-      }
-    }
-
-    let particlesArray: Particle[] = [];
-
-    const particleCountForWidth = (w: number) => {
-      if (w < 480) return 30;
-      if (w < 900) return 50;
-      return 80;
-    };
+    const COLORS = ['0,255,231', '255,0,170', '255,230,0'];
+    type P = { x: number; y: number; vx: number; vy: number; r: number; c: string };
+    let particles: P[] = [];
+    let w = 0;
+    let h = 0;
+    let raf = 0;
+    let running = false;
 
     const init = () => {
-      if (!canvas) return;
-      const section = canvas.parentElement;
-      canvas.width = section ? section.offsetWidth : window.innerWidth;
-      canvas.height = section ? section.offsetHeight : window.innerHeight;
-      particlesArray = [];
-      const count = particleCountForWidth(canvas.width);
-      for (let i = 0; i < count; i++) {
-        particlesArray.push(new Particle());
-      }
+      const parent = canvas.parentElement;
+      w = parent ? parent.offsetWidth : window.innerWidth;
+      h = parent ? parent.offsetHeight : window.innerHeight;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      const count = w < 480 ? 28 : w < 900 ? 45 : 70;
+      particles = Array.from({ length: count }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.35,
+        vy: (Math.random() - 0.5) * 0.35,
+        r: Math.random() * 1.6 + 0.4,
+        c: COLORS[Math.floor(Math.random() * COLORS.length)],
+      }));
     };
 
-    let animationId: number;
-    const animate = () => {
-      if (!ctx || !canvas) return;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      for (let i = 0; i < particlesArray.length; i++) {
-        particlesArray[i].update();
-        particlesArray[i].draw();
+    const LINK = 120;
+    const frame = () => {
+      ctx.clearRect(0, 0, w, h);
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < 0 || p.x > w) p.vx *= -1;
+        if (p.y < 0 || p.y > h) p.vy *= -1;
+
+        ctx.fillStyle = `rgba(${p.c},0.8)`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+
+        for (let j = i + 1; j < particles.length; j++) {
+          const q = particles[j];
+          const dx = p.x - q.x;
+          const dy = p.y - q.y;
+          const d = Math.hypot(dx, dy);
+          if (d < LINK) {
+            ctx.strokeStyle = `rgba(0,255,231,${(1 - d / LINK) * 0.16})`;
+            ctx.lineWidth = 0.6;
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(q.x, q.y);
+            ctx.stroke();
+          }
+        }
       }
-      animationId = requestAnimationFrame(animate);
+      raf = requestAnimationFrame(frame);
     };
+
+    const start = () => { if (!running) { running = true; raf = requestAnimationFrame(frame); } };
+    const stop = () => { running = false; cancelAnimationFrame(raf); };
 
     init();
-    animate();
+    const io = new IntersectionObserver(([e]) => (e.isIntersecting ? start() : stop()));
+    io.observe(canvas);
 
-    const handleResize = () => init();
-    window.addEventListener('resize', handleResize);
+    let resizeT: number;
+    const onResize = () => { clearTimeout(resizeT); resizeT = window.setTimeout(init, 150); };
+    window.addEventListener('resize', onResize);
 
     return () => {
-      window.removeEventListener('resize', handleResize);
-      cancelAnimationFrame(animationId);
+      stop();
+      io.disconnect();
+      clearTimeout(resizeT);
+      window.removeEventListener('resize', onResize);
     };
   }, []);
 
-  return (
+    return (
     <section id="home" className="hero-section">
-      <canvas ref={canvasRef} className="hero-canvas"></canvas>
+      <canvas ref={canvasRef} className="hero-canvas" aria-hidden="true" />
+
+      <Parallax className="orb orb-cyan orb-tr" speed={-0.18} />
+      <Parallax className="orb orb-magenta orb-bl" speed={0.3} />
+      <Parallax className="orb orb-violet hero-orb-mid" speed={0.12} />
+
       <div className="hero-content section-container">
-        <div className="hero-text">
-          <p className="greeting">INITIALIZING_USER_PROFILE...</p>
-          <h1 className="glitch-name" data-text="MARK AIRON CANTAL">
-            MARK AIRON CANTAL
+        <div ref={textRef} className="hero-text">
+          <p className="status-pill">
+            <span className="dot" />
+            Available for Shopify freelance work
+          </p>
+
+          <h1 ref={nameRef} className="glitch-name" aria-label="Mark Airon Cantal">
+            <span className="name-line" data-text="MARK AIRON" aria-hidden="true">MARK AIRON</span>
+            <span className="name-line grad" data-text="CANTAL" aria-hidden="true">CANTAL</span>
           </h1>
+
           <h2 className="typewriter-container">
-            <span className="role-text">&gt; {roleText}</span>
-            <span className="cursor">|</span>
+            <span className="prompt">&gt;</span> <span>{text}</span>
+            <span className="cursor">_</span>
           </h2>
+
+          <p className="hero-sub">
+            I build full-stack systems, Shopify storefronts and AI-driven workflows —
+            clean on the surface, solid underneath.
+          </p>
+
           <div className="cta-container">
-            <a ref={primaryBtnRef} href="#projects" className="neon-btn primary">
-              <span className="btn-text">[VIEW PROJECTS]</span>
+            <a ref={primaryBtnRef} href="#projects" className="btn btn-primary">
+              View projects <ArrowDownRight size={18} />
             </a>
             <a
               ref={secondaryBtnRef}
               href="/files/cv.pdf"
               download="Mark_Airon_Cantal_CV.pdf"
-              className="neon-btn secondary"
+              className="btn btn-ghost"
             >
-              <span className="btn-text">[DOWNLOAD CV]</span>
+              Download CV <Download size={16} />
             </a>
           </div>
         </div>
-        <div className="hero-visuals">
-          <div className="profile-wrapper">
-            <div className="energy-rings">
-              <div className="ring ring-1"></div>
-              <div className="ring ring-2"></div>
-              <div className="ring ring-3"></div>
-            </div>
-            <div className="hud-rings">
-              <div className="hud-ring rotating-clockwise"></div>
-              <div className="hud-ring rotating-counter"></div>
-              <div className="hud-markers"></div>
-            </div>
+
+        <div
+          ref={visualRef}
+          className="hero-visuals"
+          onMouseMove={onTilt}
+          onMouseLeave={resetTilt}
+        >
+          <div ref={tiltRef} className="profile-wrapper">
+            <div className="ring ring-pulse" />
+            <div className="ring ring-dash" />
             <div className="image-container">
-              <img src="/images/gradpic.jpg" alt="Mark Airon Cantal - Graduation Photo" className="profile-img" />
-              <div className="img-overlay"></div>
+              <img src="/images/gradpic.jpg" alt="Mark Airon Cantal" className="profile-img" />
+              <div className="img-overlay" />
             </div>
           </div>
         </div>
       </div>
 
-      <div className="hero-marquee marquee-strip" aria-hidden="true">
+      <div className="hero-marquee" aria-hidden="true">
         <div className="marquee-track">
-          {Array.from({ length: 2 }).flatMap((_, i) =>
-            ['FULL-STACK DEVELOPER', 'DATA SCIENCE', 'AI AUTOMATION', 'UI / UX DESIGN'].map((label) => (
-              <span key={`${i}-${label}`}>{label}</span>
-            ))
-          )}
+          {[0, 1].map((g) => (
+            <div className="marquee-group" key={g}>
+              {MARQUEE.map((label) => (
+                <span key={`${g}-${label}`}>
+                  {label}
+                  <i>✦</i>
+                </span>
+              ))}
+            </div>
+          ))}
         </div>
       </div>
 
-      <div className="scroll-cue">
+      <div className="scroll-cue" aria-hidden="true">
         <span>SCROLL</span>
-        <span className="line"></span>
+        <span className="line" />
       </div>
     </section>
   );

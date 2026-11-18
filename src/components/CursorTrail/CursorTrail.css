@@ -1,9 +1,41 @@
-.cursor-canvas {
+.cursor-ring,
+.cursor-dot {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
   z-index: 9999;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.cursor-ring.visible,
+.cursor-dot.visible { opacity: 1; }
+
+.cursor-ring span {
+  display: block;
+  width: 36px;
+  height: 36px;
+  margin: -18px 0 0 -18px;
+  border: 1px solid rgba(0, 255, 231, 0.55);
+  border-radius: 50%;
+  transition: transform 0.4s var(--ease-out), background 0.3s ease, border-color 0.3s ease;
+}
+.cursor-ring.hover span {
+  transform: scale(1.7);
+  background: rgba(0, 255, 231, 0.08);
+  border-color: var(--secondary-neon);
+}
+
+.cursor-dot span {
+  display: block;
+  width: 5px;
+  height: 5px;
+  margin: -2.5px 0 0 -2.5px;
+  border-radius: 50%;
+  background: var(--primary-neon);
+  box-shadow: 0 0 8px var(--primary-neon);
+}
+
+@media (hover: none), (pointer: coarse) {
+  .cursor-ring, .cursor-dot { display: none; }
 }

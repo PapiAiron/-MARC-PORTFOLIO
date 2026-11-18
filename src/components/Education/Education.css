@@ -1,110 +1,60 @@
-.education-section {
-  background-color: var(--surface-color);
-  position: relative;
-}
+.education-section { background-color: var(--surface-color); }
 
-.edu-grid {
+.edu-list { border-top: 1px solid var(--hairline); }
+
+.edu-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
-  gap: var(--gap-lg);
-}
-
-.edu-card {
-  position: relative;
-  text-align: center;
-  padding: clamp(2rem, 5vw, 3rem) clamp(1.25rem, 4vw, 2rem);
-  overflow: hidden;
-}
-
-.edu-status-badge {
-  position: absolute;
-  top: 15px;
-  right: -30px;
-  background: var(--secondary-neon);
-  color: #fff;
-  padding: 5px 30px;
-  font-size: 0.60rem;
-  font-weight: bold;
-  letter-spacing: 2px;
-  transform: rotate(45deg);
-  box-shadow: 0 0 10px var(--secondary-neon);
-  z-index: 10;
-}
-
-.edu-icon-wrapper {
-  width: 70px;
-  height: 70px;
-  margin: 0 auto 1.5rem;
-  background: rgba(255, 0, 170, 0.1);
-  border-radius: 50%;
-  display: flex;
+  grid-template-columns: 170px 1fr auto;
   align-items: center;
-  justify-content: center;
-  border: 1px dotted var(--secondary-neon);
-  box-shadow: inset 0 0 15px rgba(255, 0, 170, 0.2);
-  transition: transform 0.3s ease;
-}
-
-.edu-card:hover .edu-icon-wrapper {
-  transform: scale(1.1) rotate(10deg);
-}
-
-.edu-info h3 {
-  font-family: var(--font-display);
-  color: var(--text-primary);
-  font-size: clamp(1rem, 2.4vw, 1.2rem);
-  margin-bottom: 0.8rem;
-  min-height: 3rem;
-}
-
-.edu-school {
-  color: var(--primary-neon);
-  font-size: clamp(0.9rem, 2vw, 1rem);
-  margin-bottom: 1.5rem;
+  gap: 1rem 2.5rem;
+  padding: clamp(1.4rem, 3vw, 2rem) 0;
+  border-bottom: 1px solid var(--hairline);
 }
 
 .edu-period {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-}
-
-.edu-period .line {
-  height: 1px;
-  width: 30px;
-  background: var(--text-muted);
-}
-
-.edu-period .text {
-  color: var(--text-muted);
   font-family: var(--font-body);
-  font-size: 0.85rem;
-  letter-spacing: 1px;
+  font-size: 0.82rem;
+  letter-spacing: 0.16em;
+  color: var(--text-muted);
 }
+.edu-info h3 {
+  font-family: var(--font-display);
+  font-size: clamp(1.05rem, 2.4vw, 1.35rem);
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 0.3rem;
+  transition: color 0.3s ease;
+}
+.edu-row:hover .edu-info h3 { color: var(--primary-neon); }
+.edu-school { color: var(--text-muted); font-size: 0.95rem; }
 
-.edu-icon-wrapper {
-  width: 70px;
-  height: 70px;
-  margin: 0 auto 1.5rem;
-  background: rgba(255, 0, 170, 0.1);
+.edu-right { display: flex; align-items: center; gap: 1rem; }
+.edu-status { text-transform: uppercase; letter-spacing: 0.16em; font-size: 0.68rem; }
+
+.edu-logo {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px dotted var(--secondary-neon);
-  box-shadow: inset 0 0 15px rgba(255, 0, 170, 0.2);
-  transition: transform 0.3s ease;
-  overflow: hidden; /* keep logo clipped to the circle */
+  border: 1px solid var(--hairline);
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.03);
+  transition: border-color 0.4s ease, transform 0.5s var(--ease-out);
+}
+.edu-row:hover .edu-logo { border-color: var(--secondary-neon); transform: rotate(8deg) scale(1.06); }
+.edu-logo img { width: 100%; height: 100%; object-fit: contain; padding: 7px; }
+
+@media (max-width: 760px) {
+  .edu-row { grid-template-columns: 1fr auto; }
+  .edu-period { grid-column: 1 / -1; }
 }
 
-.edu-card:hover .edu-icon-wrapper {
-  transform: scale(1.1) rotate(10deg);
-}
+.edu-row:nth-child(1) { --accent: var(--secondary-neon); }
+.edu-row:nth-child(2) { --accent: var(--violet); }
+.edu-row:nth-child(3) { --accent: var(--blue); }
 
-.edu-logo-img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  padding: 10px; /* breathing room so logos don't touch the border */
-}
+.edu-row:hover .edu-info h3 { color: var(--accent); }
+.edu-period { color: var(--accent); }
+.edu-status { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 40%, transparent); }
+.edu-row:hover .edu-logo { border-color: var(--accent); }

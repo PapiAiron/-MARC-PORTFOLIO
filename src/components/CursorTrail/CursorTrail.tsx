@@ -2,72 +2,61 @@ import { useEffect, useRef } from 'react';
 import './CursorTrail.css';
 
 export default function CursorTrail() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const ringRef = useRef<HTMLDivElement>(null);
+  const dotRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Touch devices have no real cursor — skip the effect entirely so
-    // we don't pay for a hidden canvas/rAF loop on phones and tablets.
-    const isTouch = window.matchMedia('(hover: none), (pointer: coarse)').matches;
-    if (isTouch) return;
+    // No cursor on touch devices
+    if (window.matchMedia('(hover: none), (pointer: coarse)').matches) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    const ring = ringRef.current;
+    const dot = dotRef.current;
+    if (!ring || !dot) return;
 
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    let mx = -100, my = -100, rx = -100, ry = -100;
+    let raf = 0;
 
-    let particles: { x: number; y: number; alpha: number; size: number }[] = [];
-    let mouse = { x: -100, y: -100 };
-
-    const updateSize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+    const onMove = (e: MouseEvent) => {
+      mx = e.clientX;
+      my = e.clientY;
+      dot.style.transform = `translate(${mx}px, ${my}px)`;
+      ring.classList.add('visible');
+      dot.classList.add('visible');
     };
-    window.addEventListener('resize', updateSize);
-    updateSize();
-
-    const onMouseMove = (e: MouseEvent) => {
-      mouse.x = e.clientX;
-      mouse.y = e.clientY;
-      particles.push({
-        x: mouse.x,
-        y: mouse.y,
-        alpha: 1,
-        size: Math.random() * 3 + 1
-      });
+    const onLeave = () => {
+      ring.classList.remove('visible');
+      dot.classList.remove('visible');
     };
-    window.addEventListener('mousemove', onMouseMove);
-
-    const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      for (let i = 0; i < particles.length; i++) {
-        const p = particles[i];
-        p.alpha -= 0.02;
-        p.size *= 0.95;
-
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(0, 255, 231, ${p.alpha})`;
-        ctx.shadowBlur = 10;
-        ctx.shadowColor = '#00ffe7';
-        ctx.fill();
-
-        if (p.alpha <= 0) {
-          particles.splice(i, 1);
-          i--;
-        }
-      }
-
-      requestAnimationFrame(animate);
+    const onOver = (e: MouseEvent) => {
+      const hit = (e.target as HTMLElement).closest('a, button, [role="tab"], input, textarea, label');
+      ring.classList.toggle('hover', !!hit);
     };
-    animate();
+
+    const tick = () => {
+      rx += (mx - rx) * 0.16;
+      ry += (my - ry) * 0.16;
+      ring.style.transform = `translate(${rx}px, ${ry}px)`;
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+
+    window.addEventListener('mousemove', onMove, { passive: true });
+    window.addEventListener('mouseover', onOver, { passive: true });
+    document.addEventListener('mouseleave', onLeave);
 
     return () => {
-      window.removeEventListener('resize', updateSize);
-      window.removeEventListener('mousemove', onMouseMove);
+      cancelAnimationFrame(raf);
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseover', onOver);
+      document.removeEventListener('mouseleave', onLeave);
     };
   }, []);
 
-  return <canvas ref={canvasRef} className="cursor-canvas" />;
+  return (
+    <>
+      <div ref={ringRef} className="cursor-ring" aria-hidden="true"><span /></div>
+      <div ref={dotRef} className="cursor-dot" aria-hidden="true"><span /></div>
+    </>
+  );
 }

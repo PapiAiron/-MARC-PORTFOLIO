@@ -11,7 +11,9 @@ import Experience from './components/Experience/Experience';
 import Education from './components/Education/Education';
 import Contact from './components/Contact/Contact';
 import Footer from './components/Footer/Footer';
+import ScrollProgress from './components/ScrollProgress/ScrollProgress';  
 import VisitorCounter from './components/VisitorCounter/VisitorCounter';
+
 
 export default function App() {
   const [loading, setLoading] = useState(true);

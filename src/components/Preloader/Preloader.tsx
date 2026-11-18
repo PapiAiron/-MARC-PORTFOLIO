@@ -7,31 +7,38 @@ interface PreloaderProps {
 
 export default function Preloader({ onComplete }: PreloaderProps) {
   const [progress, setProgress] = useState(0);
+  const [leaving, setLeaving] = useState(false);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setTimeout(() => onComplete(), 500); // Wait for fade out
-          return 100;
-        }
-        return prev + Math.floor(Math.random() * 10 + 5); // Increment rapidly
-      });
-    }, 150);
+    const id = setInterval(() => {
+      setProgress((p) => Math.min(100, p + Math.floor(Math.random() * 9) + 4));
+    }, 120);
+    return () => clearInterval(id);
+  }, []);
 
-    return () => clearInterval(interval);
-  }, [onComplete]);
+  useEffect(() => {
+    if (progress < 100) return;
+    const t1 = setTimeout(() => setLeaving(true), 350);
+    const t2 = setTimeout(() => onComplete(), 1100);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+  }, [progress, onComplete]);
 
   return (
-    <div className={`preloader ${progress >= 100 ? 'fade-out' : ''}`}>
-      <div className="scanner-line"></div>
-      <div className="preloader-content">
-        <h1 className="system-text display-font">INITIALIZING SYSTEM...</h1>
-        <div className="progress-bar-container">
-          <div className="progress-bar" style={{ width: `${progress}%` }}></div>
-        </div>
-        <p className="percentage">{progress > 100 ? 100 : progress}%</p>
+    <div className={`preloader ${leaving ? 'leaving' : ''}`} role="status" aria-label="Loading">
+      <div className="scanner-line" />
+      <div className="pre-top">
+        <span>&lt; MARK_AIRON /&gt;</span>
+        <span>PORTFOLIO_2026</span>
+      </div>
+      <div className="pre-bottom">
+        <p className="pre-label">INITIALIZING SYSTEM</p>
+        <p className="pre-count">{String(progress).padStart(3, '0')}</p>
+      </div>
+      <div className="pre-bar">
+        <div className="pre-bar-fill" style={{ transform: `scaleX(${progress / 100})` }} />
       </div>
     </div>
   );
