@@ -26,7 +26,7 @@ const projects: Project[] = [
     description:
       'Shopify store for affordable educational eBooks and curated bundles on Digital Marketing, Advertising and Trading — with clear categories, essential policy pages and instant-access messaging.',
     link: 'https://www.adtocart.pro/',
-    image: '/images/projects/adtocart.png',
+    image: '/images/projects/add.png',
   },
   {
     title: "Rich People's Closet",
@@ -36,7 +36,7 @@ const projects: Project[] = [
     description:
       'Minimalist editorial storefront for designer consignment: custom homepage sections, collection layouts, responsive product presentation and sold-item indicators on product cards.',
     link: 'https://richpeoplescloset.com/',
-    image: '/images/projects/rpc.png',
+    image: '/images/projects/richp.png',
   },
   {
     title: 'TALA.Sys',
