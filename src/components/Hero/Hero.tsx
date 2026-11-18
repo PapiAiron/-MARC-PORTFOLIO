@@ -136,8 +136,8 @@ export default function Hero() {
       <div className="hero-content section-container">
         <div className="hero-text">
           <p className="greeting">INITIALIZING_USER_PROFILE...</p>
-          <h1 className="glitch-name" data-text="MARC AIRON CANTAL">
-            MARC AIRON CANTAL
+          <h1 className="glitch-name" data-text="MARK AIRON CANTAL">
+            MARK AIRON CANTAL
           </h1>
           <h2 className="typewriter-container">
             <span className="role-text">&gt; {roleText}</span>
@@ -150,7 +150,7 @@ export default function Hero() {
             <a
               ref={secondaryBtnRef}
               href="/files/cv.pdf"
-              download="Marc_Airon_Cantal_CV.pdf"
+              download="Mark_Airon_Cantal_CV.pdf"
               className="neon-btn secondary"
             >
               <span className="btn-text">[DOWNLOAD CV]</span>
@@ -170,7 +170,7 @@ export default function Hero() {
               <div className="hud-markers"></div>
             </div>
             <div className="image-container">
-              <img src="/images/gradpic.jpg" alt="Marc Airon Cantal - Graduation Photo" className="profile-img" />
+              <img src="/images/gradpic.jpg" alt="Mark Airon Cantal - Graduation Photo" className="profile-img" />
               <div className="img-overlay"></div>
             </div>
           </div>

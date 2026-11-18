@@ -79,7 +79,7 @@ export default function Contact() {
               </div>
               <div className="contact-item">
                 <Phone className="contact-icon" color="var(--primary-neon)" />
-                <a href="tel:+639761386092">+63 976 138 6092</a>
+                <a href="https://wa.me/639761386092">+63 976 138 6092</a>
               </div>
             </div>
             
@@ -87,10 +87,10 @@ export default function Contact() {
               <a href="https://www.facebook.com/INJOKERIN0/" target="_blank" rel="noopener noreferrer" className="social-icon">
                 <Facebook />
               </a>
-              <a href="https://www.instagram.com/marcxairon_22/" target="_blank" rel="noopener noreferrer" className="social-icon">
+              <a href="https://www.instagram.com/airon.404/" target="_blank" rel="noopener noreferrer" className="social-icon">
                 <Instagram />
               </a>
-              <a href="https://www.linkedin.com/in/marc-airon-cantal-4a063a32b/?skipRedirect=true" target="_blank" rel="noopener noreferrer" className="social-icon">
+              <a href="https://www.linkedin.com/in/mark-airon-cantal-4a063a32b/?skipRedirect=true" target="_blank" rel="noopener noreferrer" className="social-icon">
                 <Linkedin />
               </a>
               <a href="https://github.com/PapiAiron" target="_blank" rel="noopener noreferrer" className="social-icon">

@@ -11,9 +11,9 @@ export default function About() {
         
         <div ref={revealRef} className="about-grid reveal">
           <div className="about-bio glass-card">
-            <h3 className="display-font">SYSTEM_USER: MARC AIRON</h3>
+            <h3 className="display-font">SYSTEM_USER: MARK AIRON</h3>
             <p className="bio-text">
-              Hi, I'm Marc Airon — a Computer Science student majoring in Data Science from Laguna University. 
+              Hi, I'm Mark Airon — a Computer Science student majoring in Data Science from Laguna University. 
               I build full-stack systems, automate workflows with AI, and design interfaces that feel like the future.
             </p>
             <p className="bio-text">
