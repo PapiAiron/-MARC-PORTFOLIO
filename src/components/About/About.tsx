@@ -67,18 +67,21 @@ export default function About() {
         <div ref={ref} className="about-grid">
           <div className="about-bio">
             <p className="bio-text rv" style={d(0)}>
-              Hi, I'm <strong>Mark Airon</strong> — a Computer Science student majoring in Data
-              Science at Laguna University. I build full-stack systems, automate workflows with AI,
-              and design interfaces that feel like the future.
+              Hi, I'm <strong>Mark Airon Cantal</strong> — a Computer Science graduate
+              majoring in Data Science from Laguna University. I build web applications,
+              develop full-stack systems, and explore AI-powered solutions that solve
+              real-world problems.
             </p>
             <p className="bio-text rv" style={d(1)}>
-              Lately I've also been working as a freelance <strong>Shopify developer</strong>,
-              customizing storefronts with Liquid, HTML, CSS and JavaScript so brands look sharp,
-              load clean and are easy to shop and find.
+              I also work as a freelance <strong>Shopify Developer</strong>, helping
+              businesses build and improve their online stores through theme
+              customization, custom Liquid development, responsive design, product
+              listings, and e-commerce optimization.
             </p>
             <p className="bio-text rv" style={d(2)}>
-              My focus is bridging performant structure with immersive aesthetics — experiences that
-              function flawlessly and leave a lasting impression.
+              I bring together technical problem-solving, thoughtful design, and
+              performance-focused development to create digital experiences that
+              work seamlessly and deliver real value.
             </p>
           </div>
 
