@@ -35,7 +35,7 @@ const projects: Project[] = [
     tech: ['Shopify', 'Liquid', 'HTML/CSS', 'SEO'],
     description:
       'Minimalist editorial storefront for designer consignment: custom homepage sections, collection layouts, responsive product presentation and sold-item indicators on product cards.',
-    link: 'https://richpeoplescloset.com/',
+    link: 'https://puanvs-gb.myshopify.com/',
     image: '/images/projects/richp.png',
   },
   {
