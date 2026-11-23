@@ -12,7 +12,7 @@ interface Exp {
   current?: boolean;
   details: string[];
   links?: { label: string; href: string }[];
-  image?: string;
+  images?: { src: string; alt?: string }[];
 }
 
 const expData: Exp[] = [
@@ -29,9 +29,12 @@ const expData: Exp[] = [
     ],
     links: [
       { label: 'Ad to Cart', href: 'https://www.adtocart.pro/' },
-      { label: "Rich People's Closet", href: 'https://richpeoplescloset.com/' },
+      { label: "Rich People's Closet", href: 'https://puanvs-gb.myshopify.com/' },
     ],
-    image: '/images/projects/rpc.png',
+    images: [
+      { src: '/images/projects/richp.png', alt: "Rich People's Closet storefront" },
+      { src: '/images/projects/add.png', alt: 'Ad to Cart storefront' },
+    ],
   },
   {
     title: 'On-the-Job Training',
@@ -42,7 +45,7 @@ const expData: Exp[] = [
       'Executed robotics and Arduino-related hardware/software tasks.',
       'Performed rigorous system auditing, debugging and module testing to ensure enterprise readiness.',
     ],
-    image: '/images/experience/exp.jpg',
+    images: [{ src: '/images/experience/exp.jpg' }],
   },
   {
     title: 'SPES Program (2023 – 2025)',
@@ -53,7 +56,7 @@ const expData: Exp[] = [
       'Processed and digitized documentation for building permits and zoning applications.',
       'Ensured compliance with local engineering protocols through systematic filing.',
     ],
-    image: '/images/experience/engr.jpg',
+    images: [{ src: '/images/experience/engr.jpg' }],
   },
 ];
 
@@ -112,14 +115,18 @@ export default function Experience() {
                 <h4 className="exp-company">{exp.company}</h4>
 
                 <div className="exp-body">
-                  {exp.image && (
-                    <div className="exp-thumb">
-                      <img
-                        src={exp.image}
-                        alt={`${exp.company} — ${exp.title}`}
-                        loading="lazy"
-                        onError={(e) => e.currentTarget.parentElement?.classList.add('no-image')}
-                      />
+                  {exp.images && exp.images.length > 0 && (
+                    <div className="exp-thumbs">
+                      {exp.images.map((img, i) => (
+                        <div key={img.src} className="exp-thumb">
+                          <img
+                            src={img.src}
+                            alt={img.alt ?? `${exp.company} — ${exp.title} (${i + 1})`}
+                            loading="lazy"
+                            onError={(e) => e.currentTarget.parentElement?.classList.add('no-image')}
+                          />
+                        </div>
+                      ))}
                     </div>
                   )}
                   <div className="exp-main">
