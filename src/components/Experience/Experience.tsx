@@ -29,7 +29,7 @@ const expData: Exp[] = [
     ],
     links: [
       { label: 'Ad to Cart', href: 'https://www.adtocart.pro/' },
-      { label: "Rich People's Closet", href: 'https://puanvs-gb.myshopify.com/' },
+      { label: "Rich People's Closet", href: 'https://richpeoplescloset.com/' },
     ],
     images: [
       { src: '/images/projects/richp.png', alt: "Rich People's Closet storefront" },
